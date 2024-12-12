@@ -70,105 +70,81 @@
         <input type="date" id="data" name="data">
 
         <label for="turno">Turno:</label>
-        <input type="text" id="turno" name="turno">
+        <select id="turno" name="turno">
+            <!-- As opções serão preenchidas dinamicamente pelo JavaScript -->
+        </select>
 
-        <label for="unidadeNegocio">Unidade de Negócio:</label>
-        <input type="text" id="unidadeNegocio" name="unidadeNegocio">
-
-        <div class="table-container">
-            <table id="dynamicTable">
-                <thead>
-                    <tr>
-                        <th>Equipamento</th>
-                        <th>Descrição do Problema</th>
-                        <th>Resolução, Causa Raiz</th>
-                        <th>Paragem (min)</th>
-                        <th>Técnico Executante</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" name="equipamento[]" placeholder="Equipamento"></td>
-                        <td><textarea name="problema[]" placeholder="Descrição do Problema"></textarea></td>
-                        <td><textarea name="resolucao[]" placeholder="Resolução, Causa Raiz"></textarea></td>
-                        <td><input type="number" name="paragem[]" placeholder="Paragem (min)"></td>
-                        <td><input type="text" name="tecnico[]" placeholder="Técnico Executante"></td>
-                        <td><button type="button" onclick="removeRow(this)">Remover</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <button type="button" id="addRowButton">Adicionar Linha</button>
         <button type="button" id="btnGerarPDF">Gerar PDF</button>
     </form>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script>
-        // Adicionar uma nova linha na tabela
-        document.getElementById('addRowButton').addEventListener('click', () => {
-            const tableBody = document.querySelector('#dynamicTable tbody');
-            const newRow = `
-                <tr>
-                    <td><input type="text" name="equipamento[]" placeholder="Equipamento"></td>
-                    <td><textarea name="problema[]" placeholder="Descrição do Problema"></textarea></td>
-                    <td><textarea name="resolucao[]" placeholder="Resolução, Causa Raiz"></textarea></td>
-                    <td><input type="number" name="paragem[]" placeholder="Paragem (min)"></td>
-                    <td><input type="text" name="tecnico[]" placeholder="Técnico Executante"></td>
-                    <td><button type="button" onclick="removeRow(this)">Remover</button></td>
-                </tr>`;
-            tableBody.insertAdjacentHTML('beforeend', newRow);
-        });
+    // Função para gerar o PDF
+    function gerarPDF() {
+        const { jsPDF } = window.jspdf; // Importando jsPDF
+        const doc = new jsPDF(); // Criando um novo documento PDF
 
-        // Remover uma linha da tabela
-        function removeRow(button) {
-            const row = button.parentElement.parentElement;
-            row.remove();
+        // Selecionar o formulário e capturar os dados
+        const form = document.getElementById('relatorioForm');
+        if (!form) {
+            console.error('Formulário com id "relatorioForm" não encontrado.');
+            return;
+        }
+        const formData = new FormData(form);
+
+        let y = 20; // Posição inicial no PDF
+
+        // Título no PDF
+        doc.setFontSize(16);
+        doc.text("Relatório de Passagem de Turno", 10, y);
+        y += 10; // Avança para a próxima linha
+
+        // Adicionando os dados do formulário no PDF
+        doc.setFontSize(12);
+        for (const [key, value] of formData.entries()) {
+            doc.text(`${key}: ${value}`, 10, y);
+            y += 10;
+
+            // Adiciona uma nova página, caso chegue ao final
+            if (y > 280) {
+                doc.addPage();
+                y = 20;
+            }
         }
 
-        // Geração de PDF (reutilizando sua lógica existente)
-        document.getElementById('btnGerarPDF').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+        // Baixar o PDF com o nome especificado
+        doc.save('relatorio_passagem_turno.pdf');
+    }
 
-            // Dados gerais
-            const responsavel = document.getElementById('responsavel').value;
-            const semana = document.getElementById('semana').value;
-            const data = document.getElementById('data').value;
-            const turno = document.getElementById('turno').value;
-            const unidadeNegocio = document.getElementById('unidadeNegocio').value;
+    // Adiciona o evento de clique ao botão após a página carregar
+    document.addEventListener('DOMContentLoaded', () => {
+        const button = document.getElementById('btnGerarPDF');
+        if (!button) {
+            console.error('Botão com id "btnGerarPDF" não encontrado.');
+            return;
+        }
+        button.addEventListener('click', gerarPDF);
 
-            let y = 20;
-            doc.text(`Responsável: ${responsavel}`, 10, y); y += 10;
-            doc.text(`Semana: ${semana}`, 10, y); y += 10;
-            doc.text(`Data: ${data}`, 10, y); y += 10;
-            doc.text(`Turno: ${turno}`, 10, y); y += 10;
-            doc.text(`Unidade de Negócio: ${unidadeNegocio}`, 10, y); y += 20;
+        // Define a data padrão como a data de hoje
+        const dataInput = document.getElementById('data');
+        if (dataInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dataInput.value = today;
+        }
 
-            // Dados da tabela
-            const tableRows = document.querySelectorAll('#dynamicTable tbody tr');
-            tableRows.forEach(row => {
-                const equipamento = row.querySelector('input[name="equipamento[]"]').value;
-                const problema = row.querySelector('textarea[name="problema[]"]').value;
-                const resolucao = row.querySelector('textarea[name="resolucao[]"]').value;
-                const paragem = row.querySelector('input[name="paragem[]"]').value;
-                const tecnico = row.querySelector('input[name="tecnico[]"]').value;
-
-                doc.text(`Equipamento: ${equipamento}`, 10, y); y += 10;
-                doc.text(`Problema: ${problema}`, 10, y); y += 10;
-                doc.text(`Resolução: ${resolucao}`, 10, y); y += 10;
-                doc.text(`Paragem (min): ${paragem}`, 10, y); y += 10;
-                doc.text(`Técnico: ${tecnico}`, 10, y); y += 20;
-
-                if (y > 280) {
-                    doc.addPage();
-                    y = 20;
-                }
-            });
-
-            doc.save('relatorio_passagem_turno.pdf');
-        });
+        // Adiciona opções fixas para os turnos
+        const turnoInput = document.getElementById('turno');
+        if (turnoInput) {
+            turnoInput.innerHTML = `
+                <option value="">Selecione o Turno</option>
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+            `;
+        }
+    });
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 </body>
 </html>
 
