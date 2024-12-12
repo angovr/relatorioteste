@@ -43,6 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     button.addEventListener('click', gerarPDF);
+
+    // Define a data padrão como a data de hoje
+    const dataInput = document.getElementById('data');
+    if (dataInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dataInput.value = today;
+    }
+
+    // Adiciona opções fixas para os turnos
+    const turnoInput = document.getElementById('turno');
+    if (turnoInput) {
+        turnoInput.innerHTML = `
+            <option value="">Selecione o Turno</option>
+            <option value="1">Manhã</option>
+            <option value="2">Tarde</option>
+            <option value="3">Noite</option>
+        `;
+    }
 });
-
-
