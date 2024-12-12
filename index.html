@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Passagem de Turno</title>
+    <link rel="stylesheet" href="style.css">    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Relatório de Passagem de Turno</h1>
+    <form id="relatorioForm">
+        <label>Responsável pelo Relatório:</label>
+        <input type="text" name="responsavel" placeholder="Nome do responsável" required><br>
+
+        <label>Semana:</label>
+        <input type="text" name="semana" placeholder="Semana" required><br>
+
+        <label>Data:</label>
+        <input type="date" name="data" required><br>
+
+        <label>Turno:</label>
+        <input type="text" name="turno" placeholder="Turno" required><br>
+
+        <label>Unidade de Negócio:</label>
+        <input type="text" name="unidade" placeholder="Unidade" required><br>
+
+        <h2>Problemas e Resoluções</h2>
+        <div class="problema">
+            <label>Equipamento:</label>
+            <input type="text" name="equipamento" placeholder="Equipamento" required><br>
+
+            <label>Descrição do Problema:</label>
+            <textarea name="descricao" placeholder="Descreva o problema" required></textarea><br>
+
+            <label>Resolução e Causa Raiz:</label>
+            <textarea name="resolucao" placeholder="Descreva a resolução" required></textarea><br>
+
+            <label>Paragem (min):</label>
+            <input type="number" name="paragem" placeholder="Tempo em minutos" required><br>
+        </div>
+
+        <button type="button" id="btnGerarPDF">Gerar PDF</button>
+
+    </form>
+    <script src="script.js"></script>
+</body>
+</html>
