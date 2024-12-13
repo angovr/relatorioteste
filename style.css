@@ -10,11 +10,14 @@ body {
 
 h1 {
     text-align: center;
-    color: #333;
+    color: #424242;
+    padding: 20px;
+    background-color: #FFFFFF;
     border: 3px solid white;  /* Borda branca ao redor do título */
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);  /* Sombra branca suave */
 }
+
 
 form {
     max-width: 600px;
