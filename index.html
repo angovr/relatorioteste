@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> 
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório de Passagem de Turno</title>
     <link rel="stylesheet" href="style.css">    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -132,49 +133,24 @@
             row.remove();
         }
 
-        // Geração de PDF (reutilizando sua lógica existente)
+        // Geração de PDF utilizando html2canvas e jsPDF
         document.getElementById('btnGerarPDF').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            // Seleciona o conteúdo que deseja capturar para o PDF (toda a página ou uma parte específica)
+            const content = document.body;  // Captura toda a página, ou você pode capturar uma div específica
 
-            // Dados gerais
-            const responsavel = document.getElementById('responsavel').value;
-            const semana = document.getElementById('semana').value;
-            const data = document.getElementById('data').value;
-            const turno = document.getElementById('turno').value;
-            const unidadeNegocio = document.getElementById('unidadeNegocio').value;
+            html2canvas(content).then((canvas) => {
+                // Criando o PDF a partir do canvas
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-            let y = 20;
-            doc.text(`Responsável: ${responsavel}`, 10, y); y += 10;
-            doc.text(`Semana: ${semana}`, 10, y); y += 10;
-            doc.text(`Data: ${data}`, 10, y); y += 10;
-            doc.text(`Turno: ${turno}`, 10, y); y += 10;
-            doc.text(`Unidade de Negócio: ${unidadeNegocio}`, 10, y); y += 20;
+                // Adicionando o canvas ao PDF
+                const imgData = canvas.toDataURL('image/png');
+                doc.addImage(imgData, 'PNG', 10, 10);
 
-            // Dados da tabela
-            const tableRows = document.querySelectorAll('#dynamicTable tbody tr');
-            tableRows.forEach(row => {
-                const equipamento = row.querySelector('input[name="equipamento[]"]').value;
-                const problema = row.querySelector('textarea[name="problema[]"]').value;
-                const resolucao = row.querySelector('textarea[name="resolucao[]"]').value;
-                const paragem = row.querySelector('input[name="paragem[]"]').value;
-                const tecnico = row.querySelector('input[name="tecnico[]"]').value;
-
-                doc.text(`Equipamento: ${equipamento}`, 10, y); y += 10;
-                doc.text(`Problema: ${problema}`, 10, y); y += 10;
-                doc.text(`Resolução: ${resolucao}`, 10, y); y += 10;
-                doc.text(`Paragem (min): ${paragem}`, 10, y); y += 10;
-                doc.text(`Técnico: ${tecnico}`, 10, y); y += 20;
-
-                if (y > 280) {
-                    doc.addPage();
-                    y = 20;
-                }
+                // Salvando o PDF
+                doc.save('relatorio_passagem_turno.pdf');
             });
-
-            doc.save('relatorio_passagem_turno.pdf');
         });
     </script>
 </body>
 </html>
-
