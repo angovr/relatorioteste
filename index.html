@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,7 +70,11 @@
         <input type="date" id="data" name="data">
 
         <label for="turno">Turno:</label>
-        <input type="text" id="turno" name="turno">
+        <select id="turno" name="turno">
+            <option value="1">Turno 1</option>
+            <option value="2">Turno 2</option>
+            <option value="3">Turno 3</option>
+        </select>
 
         <label for="unidadeNegocio">Unidade de Negócio:</label>
         <input type="text" id="unidadeNegocio" name="unidadeNegocio">
@@ -105,6 +109,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script>
+        // Predefinir a data como o dia atual
+        document.getElementById('data').valueAsDate = new Date();
+
         // Adicionar uma nova linha na tabela
         document.getElementById('addRowButton').addEventListener('click', () => {
             const tableBody = document.querySelector('#dynamicTable tbody');
@@ -171,5 +178,4 @@
     </script>
 </body>
 </html>
-
 
