@@ -11,9 +11,11 @@ body {
 h1 {
     text-align: center;
     color: #333;
-    border: 2px solid white;
-    padding: 10px;
+    padding: 20px;
     background-color: #333;
+    border: 3px solid white;  /* Borda branca ao redor do título */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);  /* Sombra branca suave */
 }
 
 form {
