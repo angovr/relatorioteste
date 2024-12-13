@@ -109,7 +109,31 @@
     </form>
 
         <script>
-    document.addEventListener('DOMContentLoaded', () => {
+         // Predefinir a data como o dia atual
+        document.getElementById('data').valueAsDate = new Date();
+
+        // Adicionar uma nova linha na tabela
+        document.getElementById('addRowButton').addEventListener('click', () => {
+            const tableBody = document.querySelector('#dynamicTable tbody');
+            const newRow = `
+                <tr>
+                    <td><input type="text" name="equipamento[]" placeholder="Equipamento"></td>
+                    <td><textarea name="problema[]" placeholder="Descrição do Problema"></textarea></td>
+                    <td><textarea name="resolucao[]" placeholder="Resolução, Causa Raiz"></textarea></td>
+                    <td><input type="number" name="paragem[]" placeholder="Paragem (min)"></td>
+                    <td><input type="text" name="tecnico[]" placeholder="Técnico Executante"></td>
+                    <td><button type="button" onclick="removeRow(this)">Remover</button></td>
+                </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', newRow);
+        });
+
+        // Remover uma linha da tabela
+        function removeRow(button) {
+            const row = button.parentElement.parentElement;
+            row.remove();
+        }
+            
+        document.addEventListener('DOMContentLoaded', () => {
         const buttonPrintPDF = document.getElementById('btnGerarPDF');
 
         // Função para gerar PDF com captura de tela (imagem do site)
