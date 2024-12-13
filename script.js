@@ -10,15 +10,22 @@
             // Usando html2canvas para capturar a tela
             html2canvas(document.body).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png'); // Converter o canvas para imagem PNG
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
+                const pageWidth = pdf.internal.pageSize.getWidth(); // Largura da página do PDF
+                const pageHeight = pdf.internal.pageSize.getHeight(); // Altura da página do PDF
+                const imgWidth = canvas.width; // Largura da imagem capturada
+                const imgHeight = canvas.height; // Altura da imagem capturada
 
                 // Calcular a escala para ajustar a imagem ao tamanho da página
                 const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
                 const imgScaledWidth = imgWidth * ratio;
                 const imgScaledHeight = imgHeight * ratio;
+
+                // Verificar se a altura da imagem escalada é maior que a altura da página e ajustar
+                if (imgScaledHeight > pageHeight) {
+                    const heightRatio = pageHeight / imgHeight;
+                    imgScaledHeight = pageHeight;
+                    imgScaledWidth = imgWidth * heightRatio;
+                }
 
                 // Adiciona a imagem capturada ao PDF
                 pdf.addImage(imgData, 'PNG', 0, 0, imgScaledWidth, imgScaledHeight);
@@ -94,4 +101,3 @@
         }
     });
 </script>
-
