@@ -5,7 +5,7 @@
         // Função para gerar PDF com captura de tela (imagem do site)
         function gerarPDFPorPrint() {
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
+            const pdf = new jsPDF('landscape');
 
             // Usando html2canvas para capturar a tela
             html2canvas(document.body).then((canvas) => {
