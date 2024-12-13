@@ -1,64 +1,86 @@
-// Função para gerar o PDF
-function gerarPDF() {
-    const { jsPDF } = window.jspdf; // Importando jsPDF
-    const doc = new jsPDF(); // Criando um novo documento PDF
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttonPrintPDF = document.getElementById('btnGerarPDF');
 
-    // Selecionar o formulário e capturar os dados
-    const form = document.getElementById('relatorioForm');
-    if (!form) {
-        console.error('Formulário com id "relatorioForm" não encontrado.');
-        return;
-    }
-    const formData = new FormData(form);
+        // Função para gerar PDF com captura de tela
+        function gerarPDFPorPrint() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
 
-    let y = 20; // Posição inicial no PDF
+            html2canvas(document.body).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
 
-    // Título no PDF
-    doc.setFontSize(16);
-    doc.text("Relatório de Passagem de Turno", 10, y);
-    y += 10; // Avança para a próxima linha
+                const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+                const imgScaledWidth = imgWidth * ratio;
+                const imgScaledHeight = imgHeight * ratio;
 
-    // Adicionando os dados do formulário no PDF
-    doc.setFontSize(12);
-    for (const [key, value] of formData.entries()) {
-        doc.text(`${key}: ${value}`, 10, y);
-        y += 10;
-
-        // Adiciona uma nova página, caso chegue ao final
-        if (y > 280) {
-            doc.addPage();
-            y = 20;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgScaledWidth, imgScaledHeight);
+                pdf.save('relatorio_print.pdf');
+            });
         }
-    }
 
-    // Baixar o PDF com o nome especificado
-    doc.save('relatorio_passagem_turno.pdf');
-}
+        // Função para gerar PDF com base no formulário
+        function gerarPDFPorFormulario() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-// Adiciona o evento de clique ao botão após a página carregar
-document.addEventListener('DOMContentLoaded', () => {
-    const button = document.getElementById('btnGerarPDF');
-    if (!button) {
-        console.error('Botão com id "btnGerarPDF" não encontrado.');
-        return;
-    }
-    button.addEventListener('click', gerarPDF);
+            const form = document.getElementById('relatorioForm');
+            if (!form) {
+                console.error('Formulário com id "relatorioForm" não encontrado.');
+                return;
+            }
+            const formData = new FormData(form);
 
-    // Define a data padrão como a data de hoje
-    const dataInput = document.getElementById('data');
-    if (dataInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dataInput.value = today;
-    }
+            let y = 20;
+            doc.setFontSize(16);
+            doc.text("Relatório de Passagem de Turno", 10, y);
+            y += 10;
 
-    // Adiciona opções fixas para os turnos
-    const turnoInput = document.getElementById('turno');
-    if (turnoInput) {
-        turnoInput.innerHTML = `
-            <option value="">Selecione o Turno</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-        `;
-    }
-});
+            doc.setFontSize(12);
+            for (const [key, value] of formData.entries()) {
+                doc.text(`${key}: ${value}`, 10, y);
+                y += 10;
+                if (y > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            doc.save('relatorio_passagem_turno.pdf');
+        }
+
+        // Configurando eventos
+        if (buttonPrintPDF) {
+            buttonPrintPDF.addEventListener('click', () => {
+                const gerarComoPrint = confirm(
+                    'Deseja gerar o PDF como uma captura de tela do site? Escolha OK para captura ou Cancelar para basear nos dados do formulário.'
+                );
+                if (gerarComoPrint) {
+                    gerarPDFPorPrint();
+                } else {
+                    gerarPDFPorFormulario();
+                }
+            });
+        }
+
+        // Configurar data padrão e opções de turno
+        const dataInput = document.getElementById('data');
+        if (dataInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dataInput.value = today;
+        }
+
+        const turnoInput = document.getElementById('turno');
+        if (turnoInput) {
+            turnoInput.innerHTML = `
+                <option value="">Selecione o Turno</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            `;
+        }
+    });
+</script>
