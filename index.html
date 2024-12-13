@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Passagem de Turno</title>
+    <link rel="stylesheet" href="style.css">    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 800px;
+            margin: auto;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, textarea, select {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Passagem de Turno</h1>
+    <form id="relatorioForm">
+        <label for="responsavel">Responsável pelo Relatório:</label>
+        <input type="text" id="responsavel" name="responsavel">
+
+        <label for="semana">Semana:</label>
+        <input type="text" id="semana" name="semana">
+
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data">
+
+        <label for="turno">Turno:</label>
+        <select id="turno" name="turno">
+            <option value="1">Turno 1</option>
+            <option value="2">Turno 2</option>
+            <option value="3">Turno 3</option>
+        </select>
+
+        <label for="unidadeNegocio">Unidade de Negócio:</label>
+        <input type="text" id="unidadeNegocio" name="unidadeNegocio">
+
+        <div class="table-container">
+            <table id="dynamicTable">
+                <thead>
+                    <tr>
+                        <th>Equipamento</th>
+                        <th>Descrição do Problema</th>
+                        <th>Resolução, Causa Raiz</th>
+                        <th>Paragem (min)</th>
+                        <th>Técnico Executante</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" name="equipamento[]" placeholder="Equipamento"></td>
+                        <td><textarea name="problema[]" placeholder="Descrição do Problema"></textarea></td>
+                        <td><textarea name="resolucao[]" placeholder="Resolução, Causa Raiz"></textarea></td>
+                        <td><input type="number" name="paragem[]" placeholder="Paragem (min)"></td>
+                        <td><input type="text" name="tecnico[]" placeholder="Técnico Executante"></td>
+                        <td><button type="button" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button type="button" id="addRowButton">Adicionar Linha</button>
+        <button type="button" id="btnGerarPDF">Gerar PDF</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        // Predefinir a data como o dia atual
+        document.getElementById('data').valueAsDate = new Date();
+
+        // Adicionar uma nova linha na tabela
+        document.getElementById('addRowButton').addEventListener('click', () => {
+            const tableBody = document.querySelector('#dynamicTable tbody');
+            const newRow = `
+                <tr>
+                    <td><input type="text" name="equipamento[]" placeholder="Equipamento"></td>
+                    <td><textarea name="problema[]" placeholder="Descrição do Problema"></textarea></td>
+                    <td><textarea name="resolucao[]" placeholder="Resolução, Causa Raiz"></textarea></td>
+                    <td><input type="number" name="paragem[]" placeholder="Paragem (min)"></td>
+                    <td><input type="text" name="tecnico[]" placeholder="Técnico Executante"></td>
+                    <td><button type="button" onclick="removeRow(this)">Remover</button></td>
+                </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', newRow);
+        });
+
+        // Remover uma linha da tabela
+        function removeRow(button) {
+            const row = button.parentElement.parentElement;
+            row.remove();
+        }
+
+        // Geração de PDF (reutilizando sua lógica existente)
+        document.getElementById('btnGerarPDF').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Dados gerais
+            const responsavel = document.getElementById('responsavel').value;
+            const semana = document.getElementById('semana').value;
+            const data = document.getElementById('data').value;
+            const turno = document.getElementById('turno').value;
+            const unidadeNegocio = document.getElementById('unidadeNegocio').value;
+
+            let y = 20;
+            doc.text(`Responsável: ${responsavel}`, 10, y); y += 10;
+            doc.text(`Semana: ${semana}`, 10, y); y += 10;
+            doc.text(`Data: ${data}`, 10, y); y += 10;
+            doc.text(`Turno: ${turno}`, 10, y); y += 10;
+            doc.text(`Unidade de Negócio: ${unidadeNegocio}`, 10, y); y += 20;
+
+            // Dados da tabela
+            const tableRows = document.querySelectorAll('#dynamicTable tbody tr');
+            tableRows.forEach(row => {
+                const equipamento = row.querySelector('input[name="equipamento[]"]').value;
+                const problema = row.querySelector('textarea[name="problema[]"]').value;
+                const resolucao = row.querySelector('textarea[name="resolucao[]"]').value;
+                const paragem = row.querySelector('input[name="paragem[]"]').value;
+                const tecnico = row.querySelector('input[name="tecnico[]"]').value;
+
+                doc.text(`Equipamento: ${equipamento}`, 10, y); y += 10;
+                doc.text(`Problema: ${problema}`, 10, y); y += 10;
+                doc.text(`Resolução: ${resolucao}`, 10, y); y += 10;
+                doc.text(`Paragem (min): ${paragem}`, 10, y); y += 10;
+                doc.text(`Técnico: ${tecnico}`, 10, y); y += 20;
+
+                if (y > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+            });
+
+            doc.save('relatorio_passagem_turno.pdf');
+        });
+    </script>
+</body>
+</html>
+
