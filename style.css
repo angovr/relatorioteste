@@ -11,7 +11,7 @@ body {
 h1 {
     text-align: center;
     color: #424242;
-    padding: 20px;
+    padding: 10px 20px; 
     background-color: #FFFFFF;
     border: 3px solid white;  /* Borda branca ao redor do título */
     border-radius: 8px;
