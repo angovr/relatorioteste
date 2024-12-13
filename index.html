@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório de Passagem de Turno</title>
     <link rel="stylesheet" href="style.css">    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -106,7 +107,6 @@
         <button type="button" id="btnGerarPDF">Gerar PDF</button>
     </form>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         // Predefinir a data como o dia atual
         document.getElementById('data').valueAsDate = new Date();
