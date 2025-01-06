@@ -4,6 +4,7 @@
         const buttonSaveData = document.createElement('button');
         buttonSaveData.textContent = 'Salvar Dados';
         buttonSaveData.type = 'button';
+        buttonSaveData.id = 'btnSalvarDados';
         document.querySelector('form').appendChild(buttonSaveData);
 
         // Função para gerar PDF com captura de tela (imagem do site)
