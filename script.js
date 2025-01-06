@@ -29,7 +29,12 @@
 
                 // Adiciona a imagem capturada ao PDF
                 pdf.addImage(imgData, 'PNG', 0, 0, imgScaledWidth, imgScaledHeight);
-                pdf.save('relatorio_print.pdf'); // Salva o PDF gerado
+
+                // Obter o nome do responsável e a data
+                const responsavel = document.getElementById('responsavel').value || 'relatorio';
+                const data = document.getElementById('data').value || new Date().toISOString().split('T')[0];
+
+                pdf.save(`${responsavel}_${data}_print.pdf`); // Salva o PDF gerado
             });
         }
 
@@ -64,7 +69,11 @@
                 }
             }
 
-            doc.save('relatorio_passagem_turno.pdf'); // Salva o PDF gerado
+            // Obter o nome do responsável e a data
+            const responsavel = document.getElementById('responsavel').value || 'relatorio';
+            const data = document.getElementById('data').value || new Date().toISOString().split('T')[0];
+
+            doc.save(`${responsavel}_${data}_formulario.pdf`); // Salva o PDF gerado
         }
 
         // Evento para gerar PDF quando o botão for clicado
@@ -94,9 +103,9 @@
         if (turnoInput) {
             turnoInput.innerHTML = `
                 <option value="">Selecione o Turno</option>
-                <option value="1">Manhã</option>
-                <option value="2">Tarde</option>
-                <option value="3">Noite</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
             `;
         }
     });
