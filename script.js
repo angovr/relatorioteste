@@ -1,6 +1,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const buttonPrintPDF = document.getElementById('btnGerarPDF');
+        const buttonSaveData = document.createElement('button');
+        buttonSaveData.textContent = 'Salvar Dados';
+        buttonSaveData.type = 'button';
+        document.querySelector('form').appendChild(buttonSaveData);
 
         // Função para gerar PDF com captura de tela (imagem do site)
         function gerarPDFPorPrint() {
@@ -67,6 +71,48 @@
             doc.save('relatorio_passagem_turno.pdf'); // Salva o PDF gerado
         }
 
+        // Função para salvar os dados do formulário em um arquivo JSON no GitHub
+        async function salvarDadosNoGitHub() {
+            const form = document.getElementById('relatorioForm');
+            const formData = new FormData(form);
+            const dados = {};
+
+            formData.forEach((value, key) => {
+                if (!dados[key]) {
+                    dados[key] = [];
+                }
+                dados[key].push(value);
+            });
+
+            const responsavel = formData.get('responsavel');
+            const data = formData.get('data');
+            const fileName = `${responsavel}_${data}.json`;
+
+            const token = 'YOUR_GITHUB_TOKEN'; // Substitua pelo seu token do GitHub
+            const repo = 'YOUR_GITHUB_REPO'; // Substitua pelo seu repositório do GitHub
+            const owner = 'YOUR_GITHUB_USERNAME'; // Substitua pelo seu nome de usuário do GitHub
+
+            const content = btoa(JSON.stringify(dados, null, 2)); // Codifica o conteúdo em base64
+
+            const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${fileName}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Adicionando relatório de ${responsavel} em ${data}`,
+                    content: content
+                })
+            });
+
+            if (response.ok) {
+                alert('Dados salvos com sucesso no GitHub!');
+            } else {
+                alert('Erro ao salvar dados no GitHub.');
+            }
+        }
+
         // Evento para gerar PDF quando o botão for clicado
         if (buttonPrintPDF) {
             buttonPrintPDF.addEventListener('click', () => {
@@ -81,6 +127,9 @@
                 }
             });
         }
+
+        // Evento para salvar dados no GitHub quando o botão for clicado
+        buttonSaveData.addEventListener('click', salvarDadosNoGitHub);
 
         // Configurar a data padrão do campo de data
         const dataInput = document.getElementById('data');
