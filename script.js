@@ -94,9 +94,9 @@
         if (turnoInput) {
             turnoInput.innerHTML = `
                 <option value="">Selecione o Turno</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
+                <option value="1">Manhã</option>
+                <option value="2">Tarde</option>
+                <option value="3">Noite</option>
             `;
         }
     });
