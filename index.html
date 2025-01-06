@@ -167,6 +167,28 @@
             });
         }
 
+        // Função para salvar os dados do formulário em um arquivo JSON
+        function salvarDadosEmArquivo() {
+            const form = document.getElementById('relatorioForm');
+            const formData = new FormData(form);
+            const dados = {};
+
+            formData.forEach((value, key) => {
+                if (!dados[key]) {
+                    dados[key] = [];
+                }
+                dados[key].push(value);
+            });
+
+            const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'relatorio_dados.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         // Função para gerar PDF com base nos dados do formulário
         function gerarPDFPorFormulario() {
             const { jsPDF } = window.jspdf;
@@ -233,6 +255,13 @@
                 <option value="3">3</option>
             `;
         }
+
+        // Adicionar botão para salvar dados
+        const buttonSaveData = document.createElement('button');
+        buttonSaveData.textContent = 'Salvar Dados';
+        buttonSaveData.type = 'button';
+        buttonSaveData.addEventListener('click', salvarDadosEmArquivo);
+        document.querySelector('form').appendChild(buttonSaveData);
     });
 </script>
 </body>
